@@ -1,4 +1,4 @@
-TOA5,Bells Creek Upstream,CR800,28807,CR800.Std.27,CPU:CALOUNDRASOUTH V19.CR8,41554,Hourly
+TOA5,Location Name,CR800,28807,CR800.Std.27,CPU:LOCATIONNAME V19.CR8,41554,Hourly
 TIMESTAMP,RECORD,Depth_Avg,Velocity_Avg,Flowrate_Avg,Cum_Flow,Turbidity_Avg,
 TS,RN,,,,,,
 ,,Avg,Avg,Avg,Smp,Avg,
