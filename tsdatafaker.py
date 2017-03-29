@@ -28,7 +28,7 @@ import time
 import logging
 from run_file_args import process_run_file
 
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 
 
 def positive_int_type(x):
