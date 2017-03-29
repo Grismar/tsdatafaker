@@ -1,37 +1,34 @@
-'''
-
-Copyright 2017 Jaap van der Velde, BMT WBM Pty Ltd.
-
-Redistribution and use in source and binary forms, with or without modification,
-are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice,
-this list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice,
-this list of conditions and the following disclaimer in the documentation
-and/or other materials provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-'''
-
-__version__ = '1.0.1'
+# Copyright 2017 Jaap van der Velde, BMT WBM Pty Ltd.
+#
+# Redistribution and use in source and binary forms, with or without modification,
+# are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice,
+# this list of conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+# IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+# OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import os
 import sys
 import argparse
 import time
 import logging
+from run_file_args import process_run_file
+
+__version__ = '1.0.1'
 
 
 def positive_int_type(x):
@@ -52,7 +49,7 @@ argparser.add_argument('-hd', '--header_lines', default=4,
                        help='Number of lines to consider header lines (4 by default).')
 argparser.add_argument('-d', '--delay', type=float, default=1,
                        help='Number of seconds to wait between trying to write output (float, 1 by default).')
-argparser.add_argument('-l', '--log_level', type=int, default=1, choices=range(1, 5), metavar="[1-5]",
+argparser.add_argument('-l', '--log_level', type=int, default=1, choices=range(1, 4), metavar="[1-4]",
                        help='Level of messages to log (1 = error, 2 = warning, 3 = info, 4 = debug) (1 by default).')
 argparser.add_argument('-s', '--skip_empty', action='store_true',
                        help='Whether to skip empty lines in the source file (false by default).')
@@ -60,18 +57,12 @@ argparser.add_argument('-ow', '--overwrite', action='store_true',
                        help='Whether to OVERWRITE the output file (false by default).')
 argparser.add_argument('-i', '--increment', type=positive_int_type, default=1,
                        help='Number of lines to write to output (1 by default).')
+argparser.add_argument('-r', '--run_file', default='',
+                       help='Use a run file to configure run (settings in run file override command line arguments).')
 argparser.add_argument('-v', '--version', action='version', version='%(prog)s {0}'.format(__version__),
                        help='Number of lines to write to output (1 by default).')
 
-# parse argument for file names and log level
 args = argparser.parse_args(sys.argv[1:])
-
-input_pathname_arg = args.input[0]
-output_filename_arg = args.input[0] if args.out_file == '' else args.out_file
-output_folder_arg = os.getcwd() if args.folder == '' else args.folder
-
-log_levels = {1: logging.ERROR, 2: logging.WARNING, 3: logging.INFO, 4: logging.DEBUG}
-logging.basicConfig(level=log_levels[args.log_level], format='%(asctime)s %(message)s')
 
 
 def process(input_filename, output_filename, header_size, delay, skip_empty, overwrite, increment):
@@ -122,6 +113,16 @@ def process(input_filename, output_filename, header_size, delay, skip_empty, ove
     return lines
 
 try:
+    # apply run_file to arguments (overriding command line arguments)
+    process_run_file(args)
+
+    log_levels = {1: logging.ERROR, 2: logging.WARNING, 3: logging.INFO, 4: logging.DEBUG}
+    logging.basicConfig(level=log_levels[args.log_level], format='%(asctime)s %(message)s')
+
+    input_pathname_arg = args.input[0]
+    output_filename_arg = args.input[0] if args.out_file == '' else args.out_file
+    output_folder_arg = os.getcwd() if args.folder == '' else args.folder
+
     assert (os.path.isfile(input_pathname_arg)), "Input file not found."
     assert (os.path.isdir(output_folder_arg)), "Output folder not found."
     output_pathname_arg = os.path.join(output_folder_arg, output_filename_arg)

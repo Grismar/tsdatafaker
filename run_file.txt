@@ -1,0 +1,14 @@
+# run files accept comments
+! either python style or fortran style works
+
+log_level = 3
+skip_empty = true
+out_file = test_out.dat
+
+# same goes for assignments:
+increment == 4  ! and you're good to use inline comments as well!
+overwrite = true
+
+! nonsense attributes, but show how you can escape comments:
+non-existent-attribute1 = '  this string has no ! comment #, quotes like \' keep the spaces in!     '
+non-existent-attribute2 =     this line has no \! comment \#, but without quotes like \', the spaces get stripped
