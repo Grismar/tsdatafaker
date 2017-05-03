@@ -21,11 +21,12 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import argparse
+import logging
 import os
 import sys
-import argparse
 import time
-import logging
+
 from run_file_args import process_run_file
 
 __version__ = '1.0.2'
